@@ -1,0 +1,10 @@
+# 统一换行：仓库内 LF，Windows 工作区自动转 CRLF
+* text=auto
+
+*.ini text eol=crlf
+*.bat text eol=crlf
+
+*.py text eol=lf
+*.j2 text eol=lf
+*.md text eol=lf
+*.csv text eol=lf

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ title }}</title>
+<style>
+  /* 版式参数实测自样例 PDF（TradeConfirm(ITC9080)_CP001_20260902_002.pdf）：
+     页面 A4；目标边距左右 42.5pt / 上 35.2pt（Edge headless 对 @page 边距有
+     约 +6.2pt 的固定偏移，故此处写 36.3/29 补偿）；正文 Microsoft YaHei 9.5pt
+     / 行距 1.34；标题 YaHei Bold 10.5pt；品牌字 9pt #757070；表格值
+     Microsoft YaHei UI 9pt 常规（flags=0，与 90100 样例实测一致，原 bold 系
+     过度复刻已于 2026-09-03 修正）；表格左缘 48.7pt、宽 504.4pt、
+     列宽 51.5%/48.5%、单行行高约 26.6pt；独立 K1/K2 数字为下标 6pt；
+     结算项目符号 Wingdings \f09e；免责声明 11pt。
+     内容总宽必须 < 594.96pt，否则 Edge 触发整体缩放。 */
+  @page {
+    size: A4;
+    margin: 29pt 36.3pt 22pt;
+  }
+  body {
+    font-family: "Microsoft YaHei", sans-serif;
+    font-size: 9.5pt;
+    line-height: 1.34;
+    color: #000;
+  }
+  .brand {
+    font-size: 9pt;
+    color: #757070;
+    margin: 0 0 0 8pt;
+  }
+  h1.tc-title {
+    text-align: center;
+    font-size: 10.5pt;
+    font-weight: bold;
+    margin: 21pt 0 15pt 0;
+  }
+  .narrative {
+    margin: 0 20pt 17pt 7.8pt;
+    text-indent: 23pt;
+  }
+  .cp {
+    font-family: "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+    font-size: 9pt;
+    font-weight: normal;
+  }
+  {# 跨页封线（2026-09-07）：Edge/Chromium 对 border-collapse:collapse 的行
+     分片按 slice 模式处理，行跨页断开处不画边框。改用 separate 模型后
+     box-decoration-break:clone 生效——被切开的单元格每个分片各自克隆完整
+     边框（前页片段自带底边、后页片段自带顶边），与 Word 样例一致。
+     separate 不做相邻边合并，用相邻选择器去重复原 collapse 视觉；
+     行顶边被去重后由 0 高度 thead 的 border-bottom 补回——thead 随表
+     跨页重复，恰在后页顶部形成封线，且首页中与首行顶边重合不可见。
+     实验证据：experiments/pagebreak_exp/H_combo.pdf（两侧封线 +
+     行线坐标与 collapse 基线逐一相等）。 #}
+  table.tc-table {
+    width: 504.4pt;
+    margin-left: 6.2pt;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+  }
+  table.tc-table td {
+    border: 0.75pt solid #000;
+    padding: 6.9pt 3pt;
+    vertical-align: middle;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  /* 模拟 collapse 视觉：右邻单元格去左边线、后行单元格去顶线；
+     thead 后首行同样去顶线（顶线由 0 高 thead 提供） */
+  table.tc-table tr td + td { border-left: none; }
+  table.tc-table tr + tr td { border-top: none; }
+  table.tc-table thead + tbody tr td { border-top: none; }
+  /* 0 高度跨页重复表头：只在第 2+ 页顶部画出封线，本身不可见 */
+  table.tc-table thead th {
+    height: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 0;
+    line-height: 0;
+    border: none;
+    border-bottom: 0.75pt solid #000;
+  }
+  td.val {
+    font-family: "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+    font-size: 9pt;
+    font-weight: normal;
+  }
+  /* 长文本值单元格：样例 PDF 中为 YaHei 9.5pt 常规（区别于短值 YaHeiUI 9pt） */
+  td.long {
+    font-family: "Microsoft YaHei", sans-serif;
+    font-size: 9.5pt;
+    font-weight: normal;
+  }
+  td.pre-line {
+    white-space: pre-line;
+  }
+  td p, td ul {
+    margin: 0;
+  }
+  td .settle-indent {
+    margin-left: 15pt;
+  }
+  ul.settle-bullet {
+    margin-left: 22pt;
+    padding: 0;
+    list-style: none;
+  }
+  ul.settle-bullet li::before {
+    content: "\f09e ";
+    font-family: Wingdings;
+    margin-right: 7pt;
+  }
+  /* 样例 PDF 排版：独立 K1/K2 的数字为下标小号（6pt / 9.5pt ≈ 63.2%）；
+     结算计算与免责声明中的 K 复现为 9.96pt、下标 6.48pt（.kbig） */
+  sub {
+    font-size: 63.2%;
+    line-height: 0;
+  }
+  .kbig {
+    font-size: 9.96pt;
+  }
+  .kbig sub {
+    font-size: 6.48pt;
+  }
+  .disclaimer {
+    margin-top: 14pt;
+    font-size: 11pt;
+    text-align: justify;
+  }
+</style>
+{% block styles %}{% endblock %}
+</head>
+<body>
+  <p class="brand">{{ brand }}</p>
+  <h1 class="tc-title">{{ title }}</h1>
+  <p class="narrative">{{ narrative_pre }}<span class="cp">{{ narrative_cp }}</span>{{ narrative_post }}</p>
+{% block content %}{% endblock %}
+</body>
+</html>

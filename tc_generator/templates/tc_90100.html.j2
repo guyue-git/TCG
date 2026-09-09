@@ -1,0 +1,71 @@
+{% extends "tc_base.html.j2" %}
+{# CP001-90100（敲出结构）：字段顺序/文字按样例 PDF
+   TradeConfirm(ITC90100)_CP001_20260824_001.pdf 实测复刻。
+   与 9080 模板的差异（均来自样例 span 级实测）：
+   * 正文 9.48pt / 标题 10.56pt / 免责声明 11.04pt（9080 为 9.5/10.5/11）。
+   值单元格与 .cp 的非粗体（YaHei UI 9pt 常规）已上收到 tc_base，
+   两结构共用，此处不再重复覆盖。 #}
+
+{% block styles %}
+<style>
+  /* 覆盖 tc_base 的字号（样例 90100 实测）：
+     正文/长文本 9.48pt、标题 10.56pt、免责声明 11.04pt。 */
+  body { font-size: 9.48pt; }
+  h1.tc-title { font-size: 10.56pt; }
+  td.long { font-size: 9.48pt; }
+  .disclaimer { font-size: 11.04pt; }
+  /* 强制结算行：标签居左列顶部，条目在右列并做悬挂缩进
+     （样例实测：编号 x=302.4，条目文本 x=320.4，缩进 18pt） */
+  .comp-row td { vertical-align: top; }
+  .comp-item {
+    margin: 0;
+    padding-left: 18pt;
+    text-indent: -18pt;
+  }
+  .comp-num {
+    display: inline-block;
+    width: 18pt;
+    text-indent: 0;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{# 0 高度 thead：跨页时在续页顶部画出封线（见 tc_base CSS 注释） #}
+<table class="tc-table">
+  <colgroup><col style="width:253pt"><col style="width:251.4pt"></colgroup>
+  <thead><tr><th colspan="2"></th></tr></thead>
+  <tbody>
+  <tr><td>Confirmation number:</td><td class="val">{{ confirmation_number }}</td></tr>
+  <tr><td>Trade date (YYYY/MM/DD):</td><td class="val">{{ trade_date }}</td></tr>
+  <tr><td>Underlying asset:</td><td class="val">{{ underlying_asset }}</td></tr>
+  <tr><td>Underlying asset code:</td><td class="val">{{ underlying_asset_code }}</td></tr>
+  <tr><td>Notional principal:</td><td class="val">{{ notional_principal }}</td></tr>
+  <tr><td>Number of contract copies:</td><td class="val">{{ contract_copies }}</td></tr>
+  <tr><td>Currency:</td><td class="val">{{ currency }}</td></tr>
+  <tr><td>Option type:</td><td class="val">{{ option_type }}</td></tr>
+  <tr><td>Option strike:</td><td class="val">{{ option_strike }}</td></tr>
+  <tr><td>Duration:</td><td class="val">{{ duration }}</td></tr>
+  <tr><td>Trade date (YYYY/MM/DD):</td><td class="val">{{ trade_date }}</td></tr>
+  <tr><td>Expiry date (YYYY/MM/DD):</td><td class="val">{{ expiry_date }}</td></tr>
+  <tr><td>Option premium rate:</td><td class="val">{{ premium_rate }}</td></tr>
+  <tr><td>Execution price:</td><td class="val">{{ execution_price }}</td></tr>
+  <tr><td>Strike price:</td><td class="val">{{ strike_price }}</td></tr>
+  <tr><td>Seller discretionary option termination price*:</td><td class="val">{{ seller_discretionary_price }}</td></tr>
+  {# 强制结算：首项为标签（左列），其余为编号条目（右列悬挂缩进 + 条目间 <br> 空行分隔） #}
+  <tr class="comp-row"><td>{{ compulsory_settlement_lines[0][1] }}</td><td class="long">
+    {% for kind, text in compulsory_settlement_lines -%}
+      {%- if not loop.first -%}
+        {%- if loop.index > 2 %}<br>{% endif -%}
+        {%- set num, body = text.split(". ", 1) -%}
+        <p class="comp-item"><span class="comp-num">{{ num }}.</span>{{ body }}</p>
+      {%- endif %}
+    {%- endfor %}
+  </td></tr>
+  <tr><td>Option seller:</td><td class="long">{{ option_seller }}</td></tr>
+  <tr><td>Option buyer:</td><td class="long">{{ option_buyer }}</td></tr>
+  </tbody>
+</table>
+
+<p class="disclaimer">{{ disclaimer }}</p>
+{% endblock %}

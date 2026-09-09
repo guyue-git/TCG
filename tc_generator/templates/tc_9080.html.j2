@@ -1,0 +1,45 @@
+{% extends "tc_base.html.j2" %}
+
+{% block content %}
+{# 0 高度 thead：跨页时在续页顶部画出封线（见 tc_base CSS 注释） #}
+<table class="tc-table">
+  <colgroup><col style="width:259.7pt"><col style="width:244.7pt"></colgroup>
+  <thead><tr><th colspan="2"></th></tr></thead>
+  <tbody>
+  <tr><td>Confirmation number:</td><td class="val">{{ confirmation_number }}</td></tr>
+  <tr><td>Trade date (YYYY/MM/DD):</td><td class="val">{{ trade_date }}</td></tr>
+  <tr><td>Underlying Asset:</td><td class="val">{{ underlying_asset }}</td></tr>
+  <tr><td>Underlying Asset Code:</td><td class="val">{{ underlying_asset_code }}</td></tr>
+  <tr><td>Notional Principal:</td><td class="val">{{ notional_principal }}</td></tr>
+  <tr><td>Execution Price (“E”):</td><td class="val">{{ execution_price }}</td></tr>
+  <tr><td>Number of contract copies:</td><td class="val">{{ contract_copies }}</td></tr>
+  <tr><td>Currency:</td><td class="val">{{ currency }}</td></tr>
+  <tr><td>Option type:</td><td class="val">{{ option_type }}</td></tr>
+  <tr><td>Option observation price 1 percentage (K1_ratio):</td><td class="val">{{ k1_ratio }}</td></tr>
+  <tr><td>Option observation price 2 percentage (K2_ratio):</td><td class="val">{{ k2_ratio }}</td></tr>
+  <tr><td>Option observation price 1 (“K<sub>1</sub>”):</td><td class="val">{{ k1_formula }}</td></tr>
+  <tr><td>Option observation price 2 (“K<sub>2</sub>”):</td><td class="val">{{ k2_formula }}</td></tr>
+  <tr><td>Participation Rate (“r”)</td><td class="val">{{ participation_rate }}</td></tr>
+  <tr><td>Duration:</td><td class="val">{{ duration }}</td></tr>
+  <tr><td>Trade date (YYYY/MM/DD):</td><td class="val">{{ trade_date }}</td></tr>
+  <tr><td>Expiry date (YYYY/MM/DD):</td><td class="val">{{ expiry_date }}</td></tr>
+  <tr><td>Option premium rate:</td><td class="val">{{ premium_rate }}</td></tr>
+  <tr><td>Counterparty additional margining clause</td><td class="long">{{ margining_clause | k_subscript }}</td></tr>
+  <tr><td>Settlement Calculations:</td><td class="long">
+    {% for kind, text in settlement_lines -%}
+      {% if kind == "bullet" -%}
+        <ul class="settle-bullet"><li>{{ text | k_subscript(true) }}</li></ul>
+      {%- elif kind == "indent" -%}
+        <p class="settle-indent">{{ text | k_subscript(true) }}</p>
+      {%- else -%}
+        <p>{{ text | k_subscript(true) }}</p>
+      {%- endif %}
+    {%- endfor %}
+  </td></tr>
+  <tr><td>Option seller:</td><td class="long">{{ option_seller }}</td></tr>
+  <tr><td>Option buyer:</td><td class="long">{{ option_buyer }}</td></tr>
+  </tbody>
+</table>
+
+<p class="disclaimer">{{ disclaimer | k_subscript(true) }}</p>
+{% endblock %}

@@ -1,0 +1,29 @@
+# ---- 凭据与运行时数据（绝不入库）----
+config.ini
+service_a_config.ini
+runtime/
+wechat_logs/
+service_a_inbox/
+output/
+.monitor_state.json
+pending_push.jsonl
+debug.log
+
+# ---- 构建产物与备份 ----
+packaging/dist/
+packaging/build/
+packaging/_runbackup*/
+# 渲染内核（270MB 二进制，勿入 git；获取方式见 README「渲染内核」）
+packaging/chrome-headless-shell/
+
+# ---- 本地环境 ----
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.workbuddy/
+
+# ---- 业务敏感资料（公开仓库默认不入库；转私有后可删除以下三行再补提交）----
+file/
+experiments/
+项目记忆.md
