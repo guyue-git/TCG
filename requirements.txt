@@ -1,0 +1,18 @@
+# alert 依赖清单（与本机 .venv 实测版本一致，Python 3.13 x64）
+# 安装： .venv/Scripts/python.exe -m pip install -r requirements.txt
+
+# ---- 运行时 ----
+requests==2.34.2            # monitor -> 服务 A 推送（HTTP）
+Jinja2==3.1.6               # 确认书 HTML 模板渲染
+cryptography==50.0.1        # 微信库解密（AES/HMAC）
+zstandard==0.25.0           # 微信 4.x zstd 压缩消息解压（缺失会静默丢内容）
+chinesecalendar==1.11.0     # 交易日/节假日判定
+lunardate==0.3.0            # chinese_calendar 依赖
+pystray==0.19.5             # 运维台托盘
+pillow==12.3.0              # 托盘图标 / 图片处理
+
+# ---- 打包 ----
+pyinstaller==6.22.2         # onedir 三 exe + 共享 _internal
+
+# ---- 测试 ----
+pytest==9.1.1
